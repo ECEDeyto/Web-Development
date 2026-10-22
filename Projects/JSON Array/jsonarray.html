@@ -12,80 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="assets/css/style.css">
-
-    <style>
-        /* Styles for this page only (uses the colors from style.css) */
-
-        .adapt-card {
-            height: 100%;
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            overflow: hidden;
-        }
-
-        /* Image area. If the image file is missing, the title shows instead. */
-        .poster {
-            position: relative;
-            display: grid;
-            place-items: center;
-            aspect-ratio: 16 / 10;
-            padding: 1rem;
-            background: var(--ink-2);
-            color: var(--gold-soft);
-            font-family: var(--font-display);
-            font-size: 1.3rem;
-            text-align: center;
-        }
-
-        .poster img {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: top;
-        }
-
-        .adapt-body {
-            padding: 1.25rem 1.5rem 1.6rem;
-        }
-
-        .adapt-body h3 {
-            font-size: 1.35rem;
-            font-weight: 700;
-            margin: 0 0 0.75rem;
-        }
-
-        .adapt-body p {
-            color: var(--muted);
-            line-height: 1.7;
-            margin: 1rem 0 0;
-        }
-
-        .adapt-card .chip {
-            color: var(--gold-deep);
-            border-color: var(--gold);
-        }
-
-        /* Dark section variant */
-        .section-dark .adapt-card {
-            background: var(--ink-2);
-            border-color: rgba(201, 168, 76, 0.25);
-        }
-
-        .section-dark .adapt-body h3 { color: #fff; }
-        .section-dark .adapt-body p { color: var(--on-dark-muted); }
-
-        .section-dark .adapt-card .chip {
-            color: var(--gold-soft);
-            border-color: rgba(201, 168, 76, 0.55);
-        }
-
-        .section-title-small {
-            font-size: clamp(1.6rem, 3.5vw, 2.2rem);
-        }
-    </style>
 </head>
 
 <body>
@@ -94,7 +20,7 @@
 
     <nav class="navbar navbar-expand-md site-nav sticky-top" data-bs-theme="dark">
         <div class="container">
-            <a class="navbar-brand" href="/">
+            <a class="navbar-brand" href="index.html">
                 <img src="assets/img/pfp.jpg" class="brand-photo" alt="">
                 <span class="brand-name">Emmanuel Deyto
                     <span class="brand-sub d-none d-sm-block">BS Information Technology Student</span>
@@ -109,11 +35,11 @@
 
             <div class="collapse navbar-collapse justify-content-end" id="mainNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="/#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/#skills">Skills</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/#projects">Projects</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/#hobbies">Hobbies</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/#contact">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#skills">Skills</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#projects">Projects</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#hobbies">Hobbies</a></li>
+                    <li class="nav-item"><a class="button button-gold button-sm nav-cta" href="index.html#contact">Contact me</a></li>
                 </ul>
             </div>
         </div>
@@ -121,221 +47,231 @@
 
     <!-- PAGE HEADER -->
 
-    <header class="page-head">
+    <header class="page-hero">
+        <span class="corner corner-tl"></span>
+        <span class="corner corner-tr"></span>
+        <span class="corner corner-bl"></span>
+        <span class="corner corner-br"></span>
+
         <div class="container">
-            <h1>10 Manhwa That Became Anime or Live Action</h1>
-            <p>Ten manhwa and webtoons that made it to the screen: five as anime, five as live-action series.</p>
+            <span class="pill"><span class="pill-dot"></span>From page to screen</span>
+            <h1 class="gold-text">10 Manhwa That Became Anime or Live Action</h1>
+            <p>Five adapted as anime and five as live-action series.</p>
         </div>
     </header>
 
-    <!-- ANIME -->
+    <!-- LIST -->
 
-    <section class="section" id="anime">
+    <main class="page-body">
         <div class="container">
-            <h2 class="section-title">Anime</h2>
 
-            <div class="row g-4">
+            <div class="filters" role="group" aria-label="Filter the list">
+                <button type="button" class="filter-btn is-active" data-filter="all" aria-pressed="true">All 10</button>
+                <button type="button" class="filter-btn" data-filter="anime" aria-pressed="false">Anime</button>
+                <button type="button" class="filter-btn" data-filter="live" aria-pressed="false">Live action</button>
+            </div>
 
-                <div class="col-12 col-md-6 col-lg-4">
-                    <article class="adapt-card">
-                        <div class="poster">
-                            <span aria-hidden="true">Solo Leveling</span>
-                            <img src="assets/img/solo-leveling.webp" alt="Solo Leveling" onerror="this.remove()">
-                        </div>
-                        <div class="adapt-body">
-                            <h3>Solo Leveling</h3>
-                            <ul class="chip-list">
-                                <li class="chip">2024</li>
-                                <li class="chip">A-1 Pictures</li>
-                            </ul>
-                            <p>Sung Jinwoo is the weakest hunter in a world full of dungeons, until a mysterious system lets him level up without limits.</p>
-                        </div>
-                    </article>
-                </div>
+            <div class="adapt-grid">
 
-                <div class="col-12 col-md-6 col-lg-4">
-                    <article class="adapt-card">
-                        <div class="poster">
-                            <span aria-hidden="true">Tower of God</span>
-                            <img src="assets/img/tower-of-god.webp" alt="Tower of God" onerror="this.remove()">
-                        </div>
-                        <div class="adapt-body">
-                            <h3>Tower of God</h3>
-                            <ul class="chip-list">
-                                <li class="chip">2020</li>
-                                <li class="chip">Telecom Animation Film</li>
-                            </ul>
-                            <p>Bam enters a mysterious tower to find his only friend, Rachel, and has to survive dangerous tests on every floor.</p>
-                        </div>
-                    </article>
-                </div>
+                <!-- ANIME -->
 
-                <div class="col-12 col-md-6 col-lg-4">
-                    <article class="adapt-card">
-                        <div class="poster">
-                            <span aria-hidden="true">The God of High School</span>
-                            <img src="assets/img/god-of-high-school.webp" alt="The God of High School" onerror="this.remove()">
-                        </div>
-                        <div class="adapt-body">
-                            <h3>The God of High School</h3>
-                            <ul class="chip-list">
-                                <li class="chip">2020</li>
-                                <li class="chip">MAPPA</li>
-                            </ul>
-                            <p>Fighters from high schools across Korea enter a martial arts tournament where the winner gets any wish granted.</p>
-                        </div>
-                    </article>
-                </div>
+                <article class="adapt-card" data-type="anime">
+                    <div class="adapt-poster">
+                        <span class="adapt-badge">Anime</span>
+                        <span aria-hidden="true">Solo Leveling</span>
+                        <img src="assets/img/solo-leveling.jpg" alt="Solo Leveling" onerror="this.remove()">
+                    </div>
+                    <div class="adapt-body">
+                        <h3>Solo Leveling</h3>
+                        <ul class="chip-list">
+                            <li class="chip">2024</li>
+                            <li class="chip">A-1 Pictures</li>
+                        </ul>
+                        <p>Sung Jinwoo is the weakest hunter in a world full of dungeons, until a mysterious system lets him level up without limits.</p>
+                    </div>
+                </article>
 
-                <div class="col-12 col-md-6 col-lg-4">
-                    <article class="adapt-card">
-                        <div class="poster">
-                            <span aria-hidden="true">Noblesse</span>
-                            <img src="assets/img/noblesse.webp" alt="Noblesse" onerror="this.remove()">
-                        </div>
-                        <div class="adapt-body">
-                            <h3>Noblesse</h3>
-                            <ul class="chip-list">
-                                <li class="chip">2020</li>
-                                <li class="chip">Production I.G</li>
-                            </ul>
-                            <p>Raizel, a powerful noble, wakes up after 820 years of sleep and tries to live quietly as a high school student.</p>
-                        </div>
-                    </article>
-                </div>
+                <article class="adapt-card" data-type="anime">
+                    <div class="adapt-poster">
+                        <span class="adapt-badge">Anime</span>
+                        <span aria-hidden="true">Tower of God</span>
+                        <img src="assets/img/tower-of-god.jpg" alt="Tower of God" onerror="this.remove()">
+                    </div>
+                    <div class="adapt-body">
+                        <h3>Tower of God</h3>
+                        <ul class="chip-list">
+                            <li class="chip">2020</li>
+                            <li class="chip">Telecom Animation Film</li>
+                        </ul>
+                        <p>Bam enters a mysterious tower to find his only friend, Rachel, and has to survive dangerous tests on every floor.</p>
+                    </div>
+                </article>
 
-                <div class="col-12 col-md-6 col-lg-4">
-                    <article class="adapt-card">
-                        <div class="poster">
-                            <span aria-hidden="true">Lookism</span>
-                            <img src="assets/img/lookism.webp" alt="Lookism" onerror="this.remove()">
-                        </div>
-                        <div class="adapt-body">
-                            <h3>Lookism</h3>
-                            <ul class="chip-list">
-                                <li class="chip">2022</li>
-                                <li class="chip">Netflix</li>
-                            </ul>
-                            <p>Daniel Park, bullied for his looks, wakes up with a second, taller body and starts living two very different lives.</p>
-                        </div>
-                    </article>
-                </div>
+                <article class="adapt-card" data-type="anime">
+                    <div class="adapt-poster">
+                        <span class="adapt-badge">Anime</span>
+                        <span aria-hidden="true">The God of High School</span>
+                        <img src="assets/img/god-of-high-school.jpg" alt="The God of High School" onerror="this.remove()">
+                    </div>
+                    <div class="adapt-body">
+                        <h3>The God of High School</h3>
+                        <ul class="chip-list">
+                            <li class="chip">2020</li>
+                            <li class="chip">MAPPA</li>
+                        </ul>
+                        <p>Fighters from high schools across Korea enter a martial arts tournament where the winner gets any wish granted.</p>
+                    </div>
+                </article>
+
+                <article class="adapt-card" data-type="anime">
+                    <div class="adapt-poster">
+                        <span class="adapt-badge">Anime</span>
+                        <span aria-hidden="true">Noblesse</span>
+                        <img src="assets/img/noblesse.jpg" alt="Noblesse" onerror="this.remove()">
+                    </div>
+                    <div class="adapt-body">
+                        <h3>Noblesse</h3>
+                        <ul class="chip-list">
+                            <li class="chip">2020</li>
+                            <li class="chip">Production I.G</li>
+                        </ul>
+                        <p>Raizel, a powerful noble, wakes up after 820 years of sleep and tries to live quietly as a high school student.</p>
+                    </div>
+                </article>
+
+                <article class="adapt-card" data-type="anime">
+                    <div class="adapt-poster">
+                        <span class="adapt-badge">Anime</span>
+                        <span aria-hidden="true">Lookism</span>
+                        <img src="assets/img/lookism.jpg" alt="Lookism" onerror="this.remove()">
+                    </div>
+                    <div class="adapt-body">
+                        <h3>Lookism</h3>
+                        <ul class="chip-list">
+                            <li class="chip">2022</li>
+                            <li class="chip">Netflix</li>
+                        </ul>
+                        <p>Daniel Park, bullied for his looks, wakes up with a second, taller body and starts living two very different lives.</p>
+                    </div>
+                </article>
+
+                <!-- LIVE ACTION -->
+
+                <article class="adapt-card" data-type="live">
+                    <div class="adapt-poster">
+                        <span class="adapt-badge">Live action</span>
+                        <span aria-hidden="true">Sweet Home</span>
+                        <img src="assets/img/sweet-home.jpg" alt="Sweet Home" onerror="this.remove()">
+                    </div>
+                    <div class="adapt-body">
+                        <h3>Sweet Home</h3>
+                        <ul class="chip-list">
+                            <li class="chip">2020</li>
+                            <li class="chip">Netflix</li>
+                        </ul>
+                        <p>A lonely teenager moves into an apartment building just as residents start turning into monsters, and the survivors must fight to stay human.</p>
+                    </div>
+                </article>
+
+                <article class="adapt-card" data-type="live">
+                    <div class="adapt-poster">
+                        <span class="adapt-badge">Live action</span>
+                        <span aria-hidden="true">Weak Hero</span>
+                        <img src="assets/img/weak-hero.jpg" alt="Weak Hero" onerror="this.remove()">
+                    </div>
+                    <div class="adapt-body">
+                        <h3>Weak Hero</h3>
+                        <ul class="chip-list">
+                            <li class="chip">Class 1 and Class 2</li>
+                        </ul>
+                        <p>Yeon Si-eun looks like an easy target, but he uses sharp observation and planning to beat stronger opponents.</p>
+                    </div>
+                </article>
+
+                <article class="adapt-card" data-type="live">
+                    <div class="adapt-poster">
+                        <span class="adapt-badge">Live action</span>
+                        <span aria-hidden="true">True Beauty</span>
+                        <img src="assets/img/true-beauty.jpg" alt="True Beauty" onerror="this.remove()">
+                    </div>
+                    <div class="adapt-body">
+                        <h3>True Beauty</h3>
+                        <ul class="chip-list">
+                            <li class="chip">2020</li>
+                            <li class="chip">tvN</li>
+                        </ul>
+                        <p>Lim Ju-kyung hides her real face behind makeup at her new school, until two classmates start to see through it.</p>
+                    </div>
+                </article>
+
+                <article class="adapt-card" data-type="live">
+                    <div class="adapt-poster">
+                        <span class="adapt-badge">Live action</span>
+                        <span aria-hidden="true">What's Wrong with Secretary Kim</span>
+                        <img src="assets/img/secretary-kim.jpg" alt="What's Wrong with Secretary Kim" onerror="this.remove()">
+                    </div>
+                    <div class="adapt-body">
+                        <h3>What's Wrong with Secretary Kim</h3>
+                        <ul class="chip-list">
+                            <li class="chip">2018</li>
+                            <li class="chip">tvN</li>
+                        </ul>
+                        <p>A vain vice-chairman depends on his perfect secretary, Kim Mi-so, until she announces that she is quitting.</p>
+                    </div>
+                </article>
+
+                <article class="adapt-card" data-type="live">
+                    <div class="adapt-poster">
+                        <span class="adapt-badge">Live action</span>
+                        <span aria-hidden="true">Itaewon Class</span>
+                        <img src="assets/img/itaewon-class.jpg" alt="Itaewon Class" onerror="this.remove()">
+                    </div>
+                    <div class="adapt-body">
+                        <h3>Itaewon Class</h3>
+                        <ul class="chip-list">
+                            <li class="chip">2020</li>
+                            <li class="chip">JTBC</li>
+                        </ul>
+                        <p>After a loss that changes his life, Park Sae-ro-yi opens a small restaurant in Itaewon to take on the powerful company behind it.</p>
+                    </div>
+                </article>
 
             </div>
+
+            <a href="webdev.html" class="back-link">Back to Web Development</a>
         </div>
-    </section>
-
-    <!-- LIVE ACTION -->
-
-    <section class="section section-dark" id="live-action">
-        <div class="container">
-            <h2 class="section-title">Live action</h2>
-
-            <div class="row g-4">
-
-                <div class="col-12 col-md-6 col-lg-4">
-                    <article class="adapt-card">
-                        <div class="poster">
-                            <span aria-hidden="true">Sweet Home</span>
-                            <img src="assets/img/sweet-home.webp" alt="Sweet Home" onerror="this.remove()">
-                        </div>
-                        <div class="adapt-body">
-                            <h3>Sweet Home</h3>
-                            <ul class="chip-list">
-                                <li class="chip">2020</li>
-                                <li class="chip">Netflix</li>
-                            </ul>
-                            <p>A lonely teenager moves into an apartment building just as residents start turning into monsters, and the survivors must fight to stay human.</p>
-                        </div>
-                    </article>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-4">
-                    <article class="adapt-card">
-                        <div class="poster">
-                            <span aria-hidden="true">Weak Hero</span>
-                            <img src="assets/img/weak-hero.webp" alt="Weak Hero" onerror="this.remove()">
-                        </div>
-                        <div class="adapt-body">
-                            <h3>Weak Hero</h3>
-                            <ul class="chip-list">
-                                <li class="chip">Class 1 and Class 2</li>
-                            </ul>
-                            <p>Yeon Si-eun looks like an easy target, but he uses sharp observation and planning to beat stronger opponents.</p>
-                        </div>
-                    </article>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-4">
-                    <article class="adapt-card">
-                        <div class="poster">
-                            <span aria-hidden="true">True Beauty</span>
-                            <img src="assets/img/true-beauty.webp" alt="True Beauty" onerror="this.remove()">
-                        </div>
-                        <div class="adapt-body">
-                            <h3>True Beauty</h3>
-                            <ul class="chip-list">
-                                <li class="chip">2020</li>
-                                <li class="chip">tvN</li>
-                            </ul>
-                            <p>Lim Ju-kyung hides her real face behind makeup at her new school, until two classmates start to see through it.</p>
-                        </div>
-                    </article>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-4">
-                    <article class="adapt-card">
-                        <div class="poster">
-                            <span aria-hidden="true">What's Wrong with Secretary Kim</span>
-                            <img src="assets/img/secretary-kim.webp" alt="What's Wrong with Secretary Kim" onerror="this.remove()">
-                        </div>
-                        <div class="adapt-body">
-                            <h3>What's Wrong with Secretary Kim</h3>
-                            <ul class="chip-list">
-                                <li class="chip">2018</li>
-                                <li class="chip">tvN</li>
-                            </ul>
-                            <p>A vain vice-chairman depends on his perfect secretary, Kim Mi-so, until she announces that she is quitting.</p>
-                        </div>
-                    </article>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-4">
-                    <article class="adapt-card">
-                        <div class="poster">
-                            <span aria-hidden="true">Itaewon Class</span>
-                            <img src="assets/img/itaewon-class.webp" alt="Itaewon Class" onerror="this.remove()">
-                        </div>
-                        <div class="adapt-body">
-                            <h3>Itaewon Class</h3>
-                            <ul class="chip-list">
-                                <li class="chip">2020</li>
-                                <li class="chip">JTBC</li>
-                            </ul>
-                            <p>After a loss that changes his life, Park Sae-ro-yi opens a small restaurant in Itaewon to take on the powerful company behind it.</p>
-                        </div>
-                    </article>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- BACK LINKS -->
-
-    <section class="section py-5">
-        <div class="container">
-            <a href="../webdev.html" class="back-link mt-0">Back to Web Development</a>
-        </div>
-    </section>
+    </main>
 
     <!-- FOOTER -->
 
     <footer class="site-footer">
+        <img src="assets/img/banner.png" class="footer-logo" alt="ITANI logo">
         © 2026 Deyto's Portfolio
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Filter buttons: All / Anime / Live action
+        (function () {
+            const buttons = document.querySelectorAll('.filter-btn');
+            const cards = document.querySelectorAll('.adapt-card');
+
+            buttons.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const filter = btn.dataset.filter;
+                    buttons.forEach(function (b) {
+                        const on = b === btn;
+                        b.classList.toggle('is-active', on);
+                        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+                    });
+                    cards.forEach(function (card) {
+                        card.hidden = filter !== 'all' && card.dataset.type !== filter;
+                    });
+                });
+            });
+        })();
+    </script>
 
 </body>
 </html>
