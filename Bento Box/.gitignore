@@ -1,4 +1,0 @@
-# Common files to keep out of Git
-.DS_Store
-Thumbs.db
-.vscode/
