@@ -1,13 +1,13 @@
 /* ============ THEME ============ */
 :root {
-    --bg: #0d1018;
-    --surface: #161a24;
-    --border: rgba(255, 255, 255, 0.09);
-    --text: #eef1f8;
-    --muted: #8b93a7;
-    --accent-1: #7dd3fc;
-    --accent-2: #c084fc;
-    --accent-3: #f472b6;
+    --bg: #0a0908;
+    --surface: #141210;
+    --border: rgba(201, 168, 76, 0.2);
+    --text: #f3efe3;
+    --muted: #b5af9e;
+    --accent-1: #ead9a2;   /* soft gold */
+    --accent-2: #c9a84c;   /* gold */
+    --accent-3: #a8872f;   /* deep gold */
     --radius: 14px;
 }
 
@@ -29,7 +29,7 @@ body::before {
     content: "";
     position: fixed;
     inset: 0;
-    background-image: radial-gradient(rgba(255,255,255,0.045) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(201, 168, 76, 0.07) 1px, transparent 1px);
     background-size: 26px 26px;
     pointer-events: none;
     z-index: 0;
@@ -40,14 +40,14 @@ body::before {
     position: fixed;
     border-radius: 50%;
     filter: blur(110px);
-    opacity: 0.28;
+    opacity: 0.2;
     pointer-events: none;
     z-index: 0;
     animation: drift 18s ease-in-out infinite alternate;
 }
-.glow-1 { width: 520px; height: 520px; background: #38bdf8; top: -160px; left: -140px; }
-.glow-2 { width: 480px; height: 480px; background: #a855f7; top: 30%; right: -180px; animation-delay: -6s; }
-.glow-3 { width: 440px; height: 440px; background: #ec4899; bottom: -180px; left: 25%; animation-delay: -12s; opacity: 0.2; }
+.glow-1 { width: 520px; height: 520px; background: #c9a84c; top: -160px; left: -140px; }
+.glow-2 { width: 480px; height: 480px; background: #a8872f; top: 30%; right: -180px; animation-delay: -6s; }
+.glow-3 { width: 440px; height: 440px; background: #e3c56a; bottom: -180px; left: 25%; animation-delay: -12s; opacity: 0.14; }
 
 @keyframes drift {
     from { transform: translate(0, 0) scale(1); }
@@ -77,8 +77,8 @@ body::before {
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--accent-1);
-    background: rgba(125, 211, 252, 0.08);
-    border: 1px solid rgba(125, 211, 252, 0.25);
+    background: rgba(201, 168, 76, 0.08);
+    border: 1px solid rgba(201, 168, 76, 0.3);
     border-radius: 999px;
     margin-bottom: 20px;
 }
@@ -131,7 +131,7 @@ body::before {
     border-radius: var(--radius);
     background: var(--surface);
     cursor: pointer;
-    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45);
     transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s ease;
 
     /* entrance animation (JS adds .show) */
@@ -150,7 +150,7 @@ body::before {
     transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s ease;
 }
 
-/* gradient border that appears on hover (does not take space) */
+/* gold border that appears on hover (does not take space) */
 .bento-box::before {
     content: "";
     position: absolute;
@@ -195,7 +195,7 @@ body::before {
     font-weight: 600;
     line-height: 1.25;
     color: #fff;
-    background: linear-gradient(to top, rgba(8, 10, 16, 0.92), rgba(8, 10, 16, 0));
+    background: linear-gradient(to top, rgba(8, 7, 5, 0.94), rgba(8, 7, 5, 0));
     transform: translateY(100%);
     opacity: 0;
     transition: transform 0.35s ease, opacity 0.35s ease;
@@ -206,7 +206,7 @@ body::before {
 .bento-box:hover,
 .bento-box:focus-visible {
     transform: translateY(-5px);
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55), 0 0 32px rgba(192, 132, 252, 0.28);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6), 0 0 32px rgba(201, 168, 76, 0.3);
     z-index: 5;
 }
 .bento-box:hover::before,
@@ -224,7 +224,7 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(6, 8, 14, 0.88);
+    background: rgba(5, 5, 4, 0.9);
     backdrop-filter: blur(14px);
     opacity: 0;
     visibility: hidden;
@@ -247,13 +247,13 @@ body::before {
     max-height: 80vh;
     margin: 0 auto;
     border-radius: var(--radius);
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(192, 132, 252, 0.25);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 60px rgba(201, 168, 76, 0.25);
 }
 .lightbox-content figcaption {
     margin-top: 16px;
     font-size: 1.15rem;
     font-weight: 600;
-    background: linear-gradient(90deg, var(--accent-1), var(--accent-3));
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -269,14 +269,14 @@ body::before {
     font-size: 1.8rem;
     line-height: 1;
     color: #fff;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(201, 168, 76, 0.1);
     border: 1px solid var(--border);
     border-radius: 50%;
     cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease;
+    transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
 .lightbox-close:hover,
-.lightbox-nav:hover { background: rgba(255, 255, 255, 0.18); transform: scale(1.08); }
+.lightbox-nav:hover { background: rgba(201, 168, 76, 0.28); border-color: var(--accent-2); transform: scale(1.08); }
 .lightbox-close { top: 20px; right: 20px; }
 .lightbox-nav { top: 50%; margin-top: -23px; }
 .lightbox-nav.prev { left: 20px; }
