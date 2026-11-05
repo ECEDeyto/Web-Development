@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Valorant Agent | Emmanuel Deyto</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="page">
+        <div class="wrap">
+
+            <div class="back-row">
+                <a class="button button-outline button-sm" id="backlink" href="index.html">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Back to list
+                </a>
+            </div>
+
+            <div class="status" id="status" role="status">
+                <div class="spinner" aria-hidden="true"></div>
+                Loading agent...
+            </div>
+
+            <article class="detail" id="detail" hidden>
+                <div class="portrait">
+                    <img id="portrait" src="" alt="">
+                </div>
+
+                <div>
+                    <span class="role-pill" id="role"></span>
+                    <h1 class="detail-name gold-text" id="name"></h1>
+                    <p class="detail-text" id="description"></p>
+
+                    <h2 class="section-title">Abilities</h2>
+                    <ul class="ability-list" id="abilities"></ul>
+                </div>
+            </article>
+
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        © 2026 Deyto's Portfolio · Data from valorant-api.com
+    </footer>
+
+    <script>
+        const API_URL = "https://valorant-api.com/v1/agents/";
+
+        // the link looks like view.html?id=AGENT-ID&q=ja&role=Duelist&page=2
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        const role = params.get("role");
+        const search = params.get("q");
+        let page = parseInt(params.get("page"), 10);
+        if (!page || page < 1) page = 1;
+
+        // go back to the same search, the same filter and the same page of the list
+        let backQuery = "page=" + page;
+        if (role) backQuery = "role=" + encodeURIComponent(role) + "&" + backQuery;
+        if (search) backQuery = "q=" + encodeURIComponent(search) + "&" + backQuery;
+        document.getElementById("backlink").href = "index.html?" + backQuery;
+
+        const statusBox = document.getElementById("status");
+        const detail = document.getElementById("detail");
+
+        // the game lists these slots by these names
+        const SLOT_LABELS = { Ultimate: "Ultimate", Passive: "Passive" };
+
+        function make(tag, className, text) {
+            const node = document.createElement(tag);
+            if (className) node.className = className;
+            if (text !== undefined) node.textContent = text;
+            return node;
+        }
+
+        // The API writes descriptions with the game's own tags, for example:
+        //   ACTIVATE a <whitebold>Star</> to detonate it, <debuffred>concussing</> all players hit.
+        // Text inside a tag becomes bold, and the tags themselves are never shown.
+        function fillText(parent, text) {
+            const pattern = /<(\w+)>(.*?)<\/>/g;
+            let last = 0;
+            let match;
+
+            function plain(str) {
+                // remove any leftover tag such as <foo> or </>
+                const clean = str.replace(/<\/?\w*>/g, "");
+                if (clean) parent.appendChild(document.createTextNode(clean));
+            }
+
+            while ((match = pattern.exec(text)) !== null) {
+                plain(text.slice(last, match.index));
+                parent.appendChild(make("strong", "hl", match[2].replace(/<\/?\w*>/g, "")));
+                last = pattern.lastIndex;
+            }
+            plain(text.slice(last));
+        }
+
+        function showError(message) {
+            statusBox.className = "status error";
+            statusBox.textContent = message;
+            statusBox.hidden = false;
+            detail.hidden = true;
+        }
+
+        function buildAbility(ability) {
+            const row = make("li", "ability");
+
+            const iconBox = make("div", "ability-icon");
+            if (ability.displayIcon) {
+                const icon = document.createElement("img");
+                icon.src = ability.displayIcon;
+                icon.alt = "";
+                iconBox.appendChild(icon);
+            }
+
+            const text = make("div");
+            const title = make("h3", "", ability.displayName);
+            if (SLOT_LABELS[ability.slot]) {
+                title.appendChild(make("span", "slot", SLOT_LABELS[ability.slot]));
+            }
+            text.appendChild(title);
+            const description = make("p");
+            fillText(description, ability.description || "");
+            text.appendChild(description);
+
+            row.appendChild(iconBox);
+            row.appendChild(text);
+            return row;
+        }
+
+        function show(agent) {
+            document.title = agent.displayName + " | Valorant Agents";
+
+            const portrait = document.getElementById("portrait");
+            portrait.src = agent.fullPortrait || agent.bustPortrait || agent.displayIcon;
+            portrait.alt = agent.displayName;
+
+            document.getElementById("name").textContent = agent.displayName;
+            fillText(document.getElementById("description"), agent.description || "");
+
+            const role = document.getElementById("role");
+            if (agent.role) {
+                if (agent.role.displayIcon) {
+                    const icon = document.createElement("img");
+                    icon.src = agent.role.displayIcon;
+                    icon.alt = "";
+                    role.appendChild(icon);
+                }
+                role.appendChild(document.createTextNode(agent.role.displayName));
+            } else {
+                role.hidden = true;
+            }
+
+            const list = document.getElementById("abilities");
+            (agent.abilities || []).forEach(function (ability) {
+                list.appendChild(buildAbility(ability));
+            });
+
+            statusBox.hidden = true;
+            detail.hidden = false;
+        }
+
+        async function loadAgent() {
+            if (!id) {
+                showError("No agent was chosen. Go back to the list and pick one.");
+                return;
+            }
+            try {
+                const response = await fetch(API_URL + encodeURIComponent(id));
+                if (response.status === 404) {
+                    showError("That agent was not found. Go back to the list and pick another one.");
+                    return;
+                }
+                if (!response.ok) throw new Error("HTTP " + response.status);
+                const json = await response.json();
+                show(json.data);
+            } catch (error) {
+                console.error(error);
+                showError("Could not load this agent. Check your internet connection, then refresh the page.");
+            }
+        }
+
+        loadAgent();
+    </script>
+
+</body>
+</html>

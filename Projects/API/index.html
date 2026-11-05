@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Valorant Agents | Emmanuel Deyto</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="hero">
+        <span class="corner corner-tl"></span>
+        <span class="corner corner-tr"></span>
+        <span class="corner corner-bl"></span>
+        <span class="corner corner-br"></span>
+
+        <div class="wrap">
+            <span class="pill"><span class="pill-dot"></span>API project</span>
+            <h1 class="gold-text">Valorant Agents</h1>
+            <p>Every playable agent, loaded live from the Valorant API. Search by name, pick a role, then pick an agent to see their abilities.</p>
+        </div>
+    </header>
+
+    <main class="page">
+        <div class="wrap">
+
+            <!-- Search -->
+            <form class="search" id="searchForm" role="search">
+                <label class="visually-hidden" for="search">Search agents by name</label>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                <input id="search" type="search" placeholder="Search agents by name" autocomplete="off" spellcheck="false">
+            </form>
+
+            <!-- Role buttons are built from the API data -->
+            <div class="filters" id="filters" role="group" aria-label="Filter by role"></div>
+
+            <p class="result-count" id="count" aria-live="polite"></p>
+
+            <nav class="pager pager-top" aria-label="Pages">
+                <button type="button" class="button button-outline button-sm" data-go="-1">Previous</button>
+                <span class="pager-label">Page <b class="cur">1</b> of <b class="last">1</b></span>
+                <button type="button" class="button button-outline button-sm" data-go="1">Next</button>
+            </nav>
+
+            <div class="agent-grid" id="grid"></div>
+
+            <div class="status empty" id="empty" hidden></div>
+
+            <div class="status" id="status" role="status">
+                <div class="spinner" aria-hidden="true"></div>
+                Loading agents...
+            </div>
+
+            <nav class="pager pager-bottom" aria-label="Pages">
+                <button type="button" class="button button-outline button-sm" data-go="-1">Previous</button>
+                <span class="pager-label">Page <b class="cur">1</b> of <b class="last">1</b></span>
+                <button type="button" class="button button-outline button-sm" data-go="1">Next</button>
+            </nav>
+
+            <div class="pager" style="margin-top: 3rem;">
+                <a class="button button-outline" href="../webdev.html">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Back to Web Development
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        © 2026 Deyto's Portfolio · Data from valorant-api.com
+    </footer>
+
+    <script>
+        // The API: every agent you can play (no duplicates or test characters)
+        const API_URL = "https://valorant-api.com/v1/agents?isPlayableCharacter=true";
+        const PER_PAGE = 8;
+
+        const grid = document.getElementById("grid");
+        const statusBox = document.getElementById("status");
+        const emptyBox = document.getElementById("empty");
+        const filtersBox = document.getElementById("filters");
+        const countText = document.getElementById("count");
+        const searchInput = document.getElementById("search");
+        const pagers = document.querySelectorAll(".pager[aria-label='Pages']");
+
+        let agents = [];      // every agent, sorted A to Z
+        let shown = [];       // the agents that match the search and the chosen role
+        let lastPage = 1;
+
+        // the link looks like index.html?q=ja&role=Duelist&page=1
+        const params = new URLSearchParams(window.location.search);
+        let query = params.get("q") || "";
+        let role = params.get("role") || "all";
+        let page = parseInt(params.get("page"), 10);
+        if (!page || page < 1) page = 1;
+
+        searchInput.value = query;
+
+        function make(tag, className, text) {
+            const node = document.createElement(tag);
+            if (className) node.className = className;
+            if (text !== undefined) node.textContent = text;
+            return node;
+        }
+
+        // lower case, no spaces or symbols, so "kayo" finds "KAY/O"
+        function simplify(text) {
+            return text.toLowerCase().replace(/[^a-z0-9]/g, "");
+        }
+
+        // the part of the link that remembers the search, the filter and the page
+        function stateQuery() {
+            let result = "page=" + page;
+            if (role !== "all") result = "role=" + encodeURIComponent(role) + "&" + result;
+            if (query.trim()) result = "q=" + encodeURIComponent(query.trim()) + "&" + result;
+            return result;
+        }
+
+        function roleOf(agent) {
+            return agent.role ? agent.role.displayName : "";
+        }
+
+        function buildCard(agent, order) {
+            const card = make("a", "agent-card");
+            card.href = "view.html?id=" + encodeURIComponent(agent.uuid) + "&" + stateQuery();
+            card.style.setProperty("--i", order);
+
+            const avatar = make("div", "agent-avatar");
+            const img = document.createElement("img");
+            img.src = agent.displayIcon;
+            img.alt = "";
+            img.loading = "lazy";
+            avatar.appendChild(img);
+
+            const info = make("div", "agent-info");
+            info.appendChild(make("h2", "agent-name", agent.displayName));
+
+            if (agent.role) {
+                const rolePill = make("span", "role-pill");
+                if (agent.role.displayIcon) {
+                    const icon = document.createElement("img");
+                    icon.src = agent.role.displayIcon;
+                    icon.alt = "";
+                    rolePill.appendChild(icon);
+                }
+                rolePill.appendChild(document.createTextNode(agent.role.displayName));
+                info.appendChild(rolePill);
+            }
+
+            card.appendChild(avatar);
+            card.appendChild(info);
+            return card;
+        }
+
+        // one button for "All" and one for every role found in the data
+        function buildFilters() {
+            const roles = {};   // role name -> icon
+            agents.forEach(function (agent) {
+                if (agent.role) roles[agent.role.displayName] = agent.role.displayIcon;
+            });
+
+            // if the link names a role that does not exist, show everyone
+            if (role !== "all" && !(role in roles)) role = "all";
+
+            filtersBox.innerHTML = "";
+            filtersBox.appendChild(buildFilterButton("all", "All", null));
+            Object.keys(roles).sort().forEach(function (name) {
+                filtersBox.appendChild(buildFilterButton(name, name, roles[name]));
+            });
+        }
+
+        function buildFilterButton(value, label, iconUrl) {
+            const btn = make("button", "filter-btn");
+            btn.type = "button";
+            btn.dataset.role = value;
+
+            if (iconUrl) {
+                const icon = document.createElement("img");
+                icon.src = iconUrl;
+                icon.alt = "";
+                btn.appendChild(icon);
+            }
+            btn.appendChild(document.createTextNode(label));
+            btn.appendChild(make("span", "filter-count", "0"));
+
+            btn.addEventListener("click", function () {
+                role = value;
+                page = 1;            // a new filter starts at the first page
+                render();
+            });
+            return btn;
+        }
+
+        function render() {
+            // 1. the search: keep the agents whose name contains what was typed
+            const wanted = simplify(query);
+            const searched = agents.filter(function (agent) {
+                return simplify(agent.displayName).includes(wanted);
+            });
+
+            // 2. the role buttons count the agents that match the search
+            const counts = { all: searched.length };
+            searched.forEach(function (agent) {
+                counts[roleOf(agent)] = (counts[roleOf(agent)] || 0) + 1;
+            });
+            filtersBox.querySelectorAll(".filter-btn").forEach(function (btn) {
+                const on = btn.dataset.role === role;
+                btn.classList.toggle("is-active", on);
+                btn.setAttribute("aria-pressed", on ? "true" : "false");
+                btn.querySelector(".filter-count").textContent = counts[btn.dataset.role] || 0;
+            });
+
+            // 3. the role: keep only the agents of the chosen role
+            shown = role === "all" ? searched : searched.filter(function (a) { return roleOf(a) === role; });
+
+            // 4. split the result into pages
+            lastPage = Math.max(1, Math.ceil(shown.length / PER_PAGE));
+            if (page > lastPage) page = 1;
+
+            // 5. draw the cards of this page
+            grid.innerHTML = "";
+            const start = (page - 1) * PER_PAGE;
+            shown.slice(start, start + PER_PAGE).forEach(function (agent, i) {
+                grid.appendChild(buildCard(agent, i));
+            });
+
+            // 6. the message under the buttons
+            const noun = role === "all" ? "agent" : role.toLowerCase();
+            const label = noun + (shown.length === 1 ? "" : "s");
+            let text = shown.length
+                ? "Showing " + (start + 1) + " to " + Math.min(start + PER_PAGE, shown.length) + " of " + shown.length + " " + label
+                : "No " + label + " found";
+            if (query.trim()) text += " for \"" + query.trim() + "\"";
+            countText.textContent = text;
+
+            // nothing matched: say so and offer a way out
+            emptyBox.hidden = shown.length > 0;
+            if (!emptyBox.hidden) {
+                emptyBox.textContent = "No agents match your search. Try another name, or choose a different role.";
+            }
+
+            pagers.forEach(function (p) {
+                p.querySelector(".cur").textContent = page;
+                p.querySelector(".last").textContent = lastPage;
+                p.hidden = lastPage === 1;    // nothing to page through
+            });
+
+            // keep the search, the filter and the page in the address, so refresh and the back link still work
+            history.replaceState(null, "", "?" + stateQuery());
+        }
+
+        function go(step) {
+            page += step;                       // page is a number, so this adds
+            if (page < 1) page = lastPage;      // before the first page -> last page
+            if (page > lastPage) page = 1;      // after the last page -> first page
+            render();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        document.querySelectorAll("[data-go]").forEach(function (btn) {
+            btn.addEventListener("click", function () { go(Number(btn.dataset.go)); });
+        });
+
+        // search while typing; Enter does not reload the page
+        searchInput.addEventListener("input", function () {
+            query = searchInput.value;
+            page = 1;                    // a new search starts at the first page
+            if (agents.length) render();
+        });
+        document.getElementById("searchForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+        });
+
+        async function loadAgents() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error("HTTP " + response.status);
+                const json = await response.json();
+
+                agents = json.data.slice().sort(function (a, b) {
+                    return a.displayName.localeCompare(b.displayName);
+                });
+
+                statusBox.hidden = true;
+                buildFilters();
+                render();
+            } catch (error) {
+                console.error(error);
+                statusBox.className = "status error";
+                statusBox.textContent = "Could not load the agents. Check your internet connection, then refresh the page.";
+            }
+        }
+
+        loadAgents();
+    </script>
+
+</body>
+</html>
