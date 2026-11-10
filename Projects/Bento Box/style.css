@@ -150,6 +150,14 @@ body::before {
     transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s ease;
 }
 
+/* light that circles the border, visible only on hover */
+@property --ring-angle {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+}
+@keyframes ring-spin { to { --ring-angle: 360deg; } }
+
 /* gold border that appears on hover (does not take space) */
 .bento-box::before {
     content: "";
@@ -157,7 +165,16 @@ body::before {
     inset: 0;
     border-radius: inherit;
     padding: 2px;
-    background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3));
+    background: conic-gradient(
+        from var(--ring-angle),
+        transparent 0deg,
+        transparent 250deg,
+        rgba(201, 168, 76, 0.35) 290deg,
+        var(--accent-2) 330deg,
+        var(--accent-1) 350deg,
+        transparent 360deg
+    );
+    animation: ring-spin 4s linear infinite;   /* same speed always; only visible on hover */
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
     mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);

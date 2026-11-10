@@ -128,7 +128,7 @@
         }
 
         function buildCard(agent, order) {
-            const card = make("a", "agent-card");
+            const card = make("a", "agent-card glow-ring");
             card.href = "view.html?id=" + encodeURIComponent(agent.uuid) + "&" + stateQuery();
             card.style.setProperty("--i", order);
 

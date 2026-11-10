@@ -489,6 +489,58 @@ button:focus-visible {
     vertical-align: middle;
 }
 
+/* ---------- GLOW RING (a light that circles a card's border) ----------
+   Opt-in: add class="glow-ring" to any card. Currently used on the portfolio only. */
+
+@property --ring-angle {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+}
+
+.glow-ring { position: relative; }
+
+.glow-ring::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;                       /* thickness of the light */
+    background: conic-gradient(
+        from var(--ring-angle),
+        transparent 0deg,
+        transparent 250deg,
+        rgba(201, 168, 76, 0.35) 290deg,
+        var(--gold) 330deg,
+        var(--gold-soft) 350deg,
+        transparent 360deg
+    );
+    /* keep only the border ring, hide the middle */
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0;                         /* hidden until hovered */
+    transition: opacity 0.3s ease;
+    animation: ring-spin 4s linear infinite;   /* same speed always */
+}
+
+.glow-ring { transition: box-shadow 0.3s ease, border-color 0.25s, transform 0.25s; }
+
+.glow-ring:hover,
+.glow-ring:focus-visible { box-shadow: 0 0 22px rgba(201, 168, 76, 0.28); }
+
+.glow-ring:hover::after,
+.glow-ring:focus-visible::after { opacity: 1; }
+
+@keyframes ring-spin { to { --ring-angle: 360deg; } }
+
+@media (prefers-reduced-motion: reduce) {
+    .glow-ring::after { animation: none !important; --ring-angle: 20deg; }
+    .glow-ring { transition: none !important; }
+}
+
 /* ---------- FOOTER ---------- */
 
 .site-footer {
