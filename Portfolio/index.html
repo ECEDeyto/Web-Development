@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Emmanuel Deyto | Portfolio</title>
+    <meta name="description" content="Portfolio of Emmanuel Deyto, BS Information Technology student.">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg?v=3">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/img/favicon.png?v=3">
+    <link rel="icon" href="assets/img/favicon.ico?v=3" sizes="any">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <style>
+        /* ---------- LOADING SCREEN ---------- */
+        #loader {
+            position: fixed; inset: 0; z-index: 9999;
+            display: grid; place-items: center;
+            background: radial-gradient(circle at 50% 42%, #1b1708 0, #070605 55%, #030302 100%);
+            transition: opacity .6s ease, visibility .6s;
+        }
+        #loader.hide { opacity: 0; visibility: hidden; }
+        body.is-loading { overflow: hidden; }
+
+        .loader-inner { display: flex; flex-direction: column; align-items: center; gap: 22px; padding: 16px; }
+
+        .holo-stage {
+            position: relative;
+            width: min(230px, 52vw);
+            aspect-ratio: 1;
+            perspective: 900px;
+        }
+        .holo {
+            position: absolute; inset: 0;
+            transform-style: preserve-3d;
+            animation: holo-spin 7s linear infinite, holo-flicker 4.5s steps(1) infinite;
+            filter: drop-shadow(0 0 14px rgba(201, 168, 76, .45));
+        }
+        .holo svg {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            overflow: visible;
+            opacity: var(--o, 1);
+            transform: translateZ(calc(var(--z, 0) * 1px));
+        }
+
+        /* Hologram */
+        .holo-stage::before {
+            content: ""; position: absolute; inset: -4%; z-index: 2; pointer-events: none;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,.38) 0 1px, transparent 1px 4px);
+            -webkit-mask-image: radial-gradient(circle, #000 38%, transparent 68%);
+            mask-image: radial-gradient(circle, #000 38%, transparent 68%);
+        }
+        .holo-stage::after {
+            content: ""; position: absolute; left: -6%; right: -6%; height: 22%; z-index: 3; pointer-events: none;
+            background: linear-gradient(to bottom, transparent, rgba(255, 224, 120, .28), transparent);
+            animation: holo-scan 2.6s linear infinite;
+            -webkit-mask-image: linear-gradient(90deg, transparent, #000 28%, #000 72%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 28%, #000 72%, transparent);
+        }
+
+        /* light under hologram */
+        .holo-base {
+            position: relative; width: min(250px, 56vw); height: 40px; margin-top: -14px;
+        }
+        .holo-base i {
+            position: absolute; left: 50%; top: 50%; border-radius: 50%;
+            border: 2px solid rgba(201, 168, 76, .6);
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 18px rgba(201, 168, 76, .35), inset 0 0 14px rgba(201, 168, 76, .2);
+        }
+        .holo-base i:nth-child(1) { width: 100%; height: 100%; }
+        .holo-base i:nth-child(2) { width: 68%; height: 62%; border-color: rgba(255, 210, 31, .75); }
+        .holo-base::after {
+            content: ""; position: absolute; left: 14%; right: 14%; bottom: 50%; height: 180px;
+            background: linear-gradient(to top, rgba(255, 210, 31, .16), transparent);
+            clip-path: polygon(0 100%, 100% 100%, 82% 0, 18% 0); pointer-events: none;
+        }
+
+        .loader-text {
+            margin: 6px 0 0; color: var(--gold-soft, #ead9a2);
+            font-size: .85rem; letter-spacing: .4em; text-transform: uppercase; font-weight: 700;
+        }
+        .loader-text span { animation: holo-dot 1.2s infinite; opacity: .2; }
+        .loader-text span:nth-child(2) { animation-delay: .2s; }
+        .loader-text span:nth-child(3) { animation-delay: .4s; }
+        .loader-bar { width: 180px; height: 2px; background: rgba(201, 168, 76, .2); overflow: hidden; }
+        .loader-bar b { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #c9a84c, #ffd21f); animation: holo-bar 1.8s ease-out forwards; }
+
+        @keyframes holo-spin { to { transform: rotateY(360deg); } }
+        @keyframes holo-scan { from { top: -22%; } to { top: 100%; } }
+        @keyframes holo-flicker { 0%, 100% { opacity: 1; } 91% { opacity: .82; } 93% { opacity: 1; } 96% { opacity: .9; } }
+        @keyframes holo-dot { 50% { opacity: 1; } }
+        @keyframes holo-bar { to { width: 100%; } }
+
+        @media (prefers-reduced-motion: reduce) {
+            .holo, .holo-stage::after, .loader-text span { animation: none !important; }
+            .loader-text span { opacity: 1; }
+            .loader-bar b { animation-duration: .5s; }
+        }
+
+        .hero-logo { display: flex; flex-direction: column; align-items: center; margin-top: 56px; }
+        .hero-logo-float { animation: hero-float 8s ease-in-out infinite; }
+        
+        .hero-logo-stage { position: relative; width: clamp(130px, 17vw, 180px); aspect-ratio: 1; perspective: 1100px; filter: drop-shadow(0 0 18px rgba(201, 168, 76, .35)); }
+        .hero-logo-3d {
+            position: absolute; inset: 0; transform-style: preserve-3d;
+            animation: hero-turn 30s linear infinite;
+        }
+        .hero-logo-3d svg {
+            position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible;
+            opacity: var(--o, 1);
+            transform: translateZ(calc(var(--z, 0) * 1px));
+        }
+        .hero-logo-glow {
+            width: clamp(150px, 20vw, 230px); height: 26px; margin-top: 4px; border-radius: 50%;
+            background: radial-gradient(ellipse at center, rgba(201, 168, 76, .3), transparent 70%);
+            animation: hero-glow 8s ease-in-out infinite;
+        }
+        @keyframes hero-turn { from { transform: rotateX(-10deg) rotateY(0deg); } to { transform: rotateX(-10deg) rotateY(360deg); } }
+        @keyframes hero-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes hero-glow { 0%, 100% { opacity: 1; transform: scaleX(1); } 50% { opacity: .7; transform: scaleX(.86); } }
+
+        /* ---------- CARD TILT ---------- */
+        .glow-ring { transition: transform .45s ease, box-shadow .3s ease, border-color .25s; }
+        .glow-ring:hover { z-index: 5; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hero-logo-float, .hero-logo-3d, .hero-logo-glow { animation: none !important; }
+            .hero-logo-3d { transform: rotateX(-8deg) rotateY(-22deg); }
+        }
+    </style>
+    <noscript><style>#loader { display: none !important; }</style></noscript>
+</head>
+
+<body data-bs-spy="scroll" data-bs-target="#mainNav" data-bs-root-margin="-30% 0px -60%" tabindex="0">
+
+    <!-- LOADING SCREEN -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <defs>
+            <linearGradient id="badgeGrad" gradientUnits="userSpaceOnUse" x1="80" y1="130" x2="430" y2="390">
+                <stop offset="0" stop-color="#ead9a2"/><stop offset=".5" stop-color="#c9a84c"/><stop offset="1" stop-color="#8a6d1c"/>
+            </linearGradient>
+            <clipPath id="badgeClip"><rect x="0" y="146" width="512" height="220"/></clipPath>
+            <g id="badge-art">
+                <g clip-path="url(#badgeClip)" fill="none" stroke="url(#badgeGrad)" stroke-width="34" stroke-linejoin="miter" stroke-miterlimit="10">
+                    <path d="M204 112L92 256L204 400"/><path d="M308 112L420 256L308 400"/>
+                </g>
+                <path d="M232 196V316L310 256z" fill="url(#badgeGrad)"/>
+            </g>
+        </defs>
+    </svg>
+ 
+    <div id="loader" role="status" aria-label="Loading">
+        <div class="loader-inner">
+            <div class="holo-stage"><div class="holo" id="holo"></div></div>
+            <div class="holo-base" aria-hidden="true"><i></i><i></i></div>
+            <p class="loader-text">Loading<span>.</span><span>.</span><span>.</span></p>
+            <div class="loader-bar" aria-hidden="true"><b></b></div>
+        </div>
+    </div>
+    <script>
+        // Hologram loading screen: shown once per visit, hides when the page has loaded
+        (function () {
+            var loader = document.getElementById('loader');
+            if (!loader) return;
+ 
+            var seen = false;
+            try { seen = sessionStorage.getItem('logoLoaderSeen') === '1'; } catch (e) {}
+            if (seen) { loader.remove(); return; }
+            try { sessionStorage.setItem('logoLoaderSeen', '1'); } catch (e) {}
+ 
+            // stack of copies of the badge, each a little deeper, so it turns like a 3D object
+            var holo = document.getElementById('holo'), layers = 11, ns = 'http://www.w3.org/2000/svg';
+            for (var i = 0; i < layers; i++) {
+                var svg = document.createElementNS(ns, 'svg');
+                svg.setAttribute('viewBox', '0 0 512 512');
+                svg.setAttribute('aria-hidden', 'true');
+                var use = document.createElementNS(ns, 'use');
+                use.setAttribute('href', '#badge-art');
+                svg.appendChild(use);
+                svg.style.setProperty('--z', ((i - (layers - 1) / 2) * 3.5).toFixed(1));
+                svg.style.setProperty('--o', (i === 0 || i === layers - 1) ? '1' : '0.28');
+                holo.appendChild(svg);
+            }
+ 
+            document.body.classList.add('is-loading');
+ 
+            var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var minTime = reduce ? 500 : 1800;
+            var start = Date.now(), loaded = document.readyState === 'complete', hidden = false;
+ 
+            function hide() {
+                if (hidden) return;
+                hidden = true;
+                loader.classList.add('hide');
+                document.body.classList.remove('is-loading');
+                setTimeout(function () { loader.remove(); }, 700);
+            }
+            function check() {
+                if (!loaded) return;
+                var wait = minTime - (Date.now() - start);
+                if (wait <= 0) hide(); else setTimeout(hide, wait);
+            }
+            if (loaded) check(); else window.addEventListener('load', function () { loaded = true; check(); });
+            setTimeout(hide, 7000);   // never trap a visitor on the loading screen
+        })();
+    </script>
+
+    <!-- ICONS -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <symbol id="i-mail" viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22,6 12,13 2,6"/></symbol>
+        <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+        <symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></symbol>
+        <symbol id="i-facebook" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></symbol>
+        <symbol id="i-code" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></symbol>
+        <symbol id="i-gamepad" viewBox="0 0 24 24"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15" cy="13" r="1"/><circle cx="18" cy="11" r="1"/><rect x="2" y="6" width="20" height="12" rx="4"/></symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></symbol>
+        <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+        <symbol id="i-cap" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></symbol>
+        <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
+        <symbol id="i-network" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/><path d="M12 8v4M5 16v-4h14v4"/></symbol>
+        <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></symbol>
+    </svg>
+
+    <!-- HEADER -->
+
+    <nav class="navbar navbar-expand-md site-nav sticky-top" data-bs-theme="dark">
+        <div class="container">
+            <a class="navbar-brand" href="#top">
+                <img src="assets/img/pfp.jpg" class="brand-photo" alt="">
+                <span class="brand-name">Emmanuel Deyto
+                    <span class="brand-sub d-none d-sm-block">BS Information Technology Student</span>
+                </span>
+            </a>
+
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#mainNav"
+                    aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="mainNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#skills">Skills</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#hobbies">Hobbies</a></li>
+                    <li class="nav-item"><a class="button button-gold button-sm nav-cta" href="#contact">Contact me</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+
+    <header class="hero" id="top">
+        <span class="corner corner-tl"></span>
+        <span class="corner corner-tr"></span>
+        <span class="corner corner-bl"></span>
+        <span class="corner corner-br"></span>
+
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <span class="pill"><span class="pill-dot"></span>3rd year BS Information Technology</span>
+
+                    <p class="hero-greet">Hello there, I'm</p>
+                    <h1>
+                        <span>Emmanuel</span>
+                        <span class="gold-text">Deyto</span>
+                    </h1>
+                    <div class="hero-rule"></div>
+
+                    <p class="hero-type">I build <span class="typed" id="typed">web projects</span><span class="caret" aria-hidden="true"></span></p>
+                    <p class="hero-text">
+                        Programming, web development, databases and networking. I keep
+                        learning new technologies so each project turns out better than the last.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a href="#projects" class="button button-gold">View my projects</a>
+                        <a href="#about" class="button button-outline">About me</a>
+                    </div>
+
+                    <div class="social">
+                        <span class="social-label">Find me</span>
+                        <a class="icon-btn" href="https://github.com/ECEDeyto" aria-label="GitHub" target="_blank" rel="noopener"><svg class="icon"><use href="#i-github"/></svg></a>
+                        <a class="icon-btn" href="mailto:emmanueldeyto68@email.com" aria-label="Email"><svg class="icon"><use href="#i-mail"/></svg></a>
+                        <a class="icon-btn" href="tel:09106422960" aria-label="Phone"><svg class="icon"><use href="#i-phone"/></svg></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="hero-visual">
+                        <img src="assets/img/pfp.jpg" alt="Photo of Emmanuel Deyto">
+                        <span class="float-chip chip-a">Python</span>
+                        <span class="float-chip chip-b">HTML</span>
+                        <span class="float-chip chip-c">SQL</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logo, turning slowly in 3D -->
+            <div class="hero-logo" aria-hidden="true">
+                <div class="hero-logo-float">
+                    <div class="hero-logo-stage"><div class="hero-logo-3d" id="heroLogo"></div></div>
+                </div>
+                <div class="hero-logo-glow"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ABOUT + EDUCATION -->
+
+    <section class="section section-dark" id="about">
+        <div class="container">
+            <div class="row g-5 align-items-center">
+                <div class="col-lg-6">
+                    <div class="section-head">
+                        <h2 class="section-title">About me</h2>
+                    </div>
+                    <p class="about-text">
+                        I am a Bachelor of Science in Information Technology student
+                        who enjoys programming, web development, database management,
+                        and learning new technologies. My goal is to continuously
+                        improve my skills and create meaningful projects.
+                    </p>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="edu-card glow-ring">
+                        <div class="edu-icon"><svg class="icon"><use href="#i-cap"/></svg></div>
+                        <h3>Bachelor of Science in Information Technology</h3>
+                        <p>
+                            Currently pursuing a degree in Information Technology
+                            with a focus on programming, networking, databases,
+                            and system development.
+                        </p>
+                        <dl class="facts">
+                            <div><dt>Program</dt><dd>BS Information Technology</dd></div>
+                            <div><dt>Year level</dt><dd>3rd year</dd></div>
+                            <div><dt>Focus</dt><dd>Programming, networking, databases</dd></div>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SKILLS -->
+
+    <section class="section section-deep" id="skills">
+        <div class="container">
+            <div class="section-head">
+                <h2 class="section-title">Skills and tools</h2>
+                <p class="section-sub">What I have used in my school projects. Hover over the strip to pause it.</p>
+            </div>
+
+            <h3 class="skill-label">Languages and web</h3>
+            <div class="marquee" aria-label="Languages and web skills">
+                <ul class="marquee-track">
+                    <li class="tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" alt="">Python</li>
+                    <li class="tile"><svg class="icon"><use href="#i-gamepad"/></svg>Pygame</li>
+                    <li class="tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" alt="">HTML</li>
+                    <li class="tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" alt="">CSS</li>
+                    <li class="tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" alt="">JavaScript</li>
+                    <li class="tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/bootstrap/bootstrap-original.svg" alt="">Bootstrap</li>
+                    <li class="tile"><svg class="icon"><use href="#i-db"/></svg>SQL</li>
+                </ul>
+            </div>
+
+            <h3 class="skill-label">Tools</h3>
+            <div class="marquee reverse" aria-label="Tools">
+                <ul class="marquee-track">
+                    <li class="tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg" alt="">VS Code</li>
+                    <li class="tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" alt="">Git</li>
+                    <li class="tile"><img class="invert" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" alt="">GitHub</li>
+                    <li class="tile"><svg class="icon"><use href="#i-network"/></svg>Cisco Packet Tracer</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROJECTS -->
+
+    <section class="section section-dark" id="projects">
+        <div class="container">
+            <div class="section-head">
+                <h2 class="section-title">My projects</h2>
+            </div>
+
+            <div class="bento">
+
+                <article class="bento-card glow-ring span-3">
+                    <img class="bento-img" src="assets/img/Card_Game.png" alt="" loading="lazy" onerror="this.remove()">
+                    <div class="bento-info">
+                        <h3>Memory Card Game</h3>
+                        <p>A game developed using Python and Pygame that tests memory and concentration skills.</p>
+                    </div>
+                </article>
+
+                <article class="bento-card glow-ring span-3">
+                    <img class="bento-img" src="assets/img/TrikeTrace.png" alt="" loading="lazy" onerror="this.remove()">
+                    <div class="bento-info">
+                        <h3>TrikeTrace System</h3>
+                        <p>A web-based system focused on tricycle monitoring and management.</p>
+                    </div>
+                </article>
+
+                <!-- Web Development (opens webdev.html) -->
+                <a href="Web-Development/Projects/webdev.html" class="bento-card glow-ring span-4 row-2">
+                    <img class="bento-img" src="assets/img/WebDev.png" alt="" loading="lazy" onerror="this.remove()">
+                    <span class="bento-open" aria-hidden="true"><svg class="icon"><use href="#i-arrow"/></svg></span>
+                    <div class="bento-info">
+                        <h3>Web Development</h3>
+                        <p>Projects from my Web Development subject, including the Bento Grid Manhwa Collection and my list of manhwa adaptations.</p>
+                    </div>
+                </a>
+
+                <article class="bento-card glow-ring span-2">
+                    <img class="bento-img" src="assets/img/Payroll.png" alt="" loading="lazy" onerror="this.remove()">
+                    <div class="bento-info">
+                        <h3>Payroll Database</h3>
+                        <p>SQL-based database project for employee payroll management and reporting.</p>
+                    </div>
+                </article>
+
+                <article class="bento-card glow-ring span-2">
+                    <img class="bento-img" src="assets/img/Cisco.png" alt="" loading="lazy" onerror="this.remove()">
+                    <div class="bento-info">
+                        <h3>Cisco Packet Tracer Activities</h3>
+                        <p>Networking simulations involving LAN and WAN configurations.</p>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- HOBBIES -->
+
+    <section class="section section-deep" id="hobbies">
+        <div class="container">
+            <div class="section-head">
+                <h2 class="section-title">Hobbies and interests</h2>
+            </div>
+
+            <div class="hobby-grid">
+                <div class="hobby glow-ring">
+                    <div class="hobby-icon"><svg class="icon"><use href="#i-code"/></svg></div>
+                    <h3>Programming</h3>
+                </div>
+                <div class="hobby glow-ring">
+                    <div class="hobby-icon"><svg class="icon"><use href="#i-gamepad"/></svg></div>
+                    <h3>Gaming</h3>
+                </div>
+                <div class="hobby glow-ring">
+                    <div class="hobby-icon"><svg class="icon"><use href="#i-cpu"/></svg></div>
+                    <h3>Technology</h3>
+                </div>
+                <div class="hobby glow-ring">
+                    <div class="hobby-icon"><svg class="icon"><use href="#i-book"/></svg></div>
+                    <h3>Learning</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+
+    <section class="section section-dark" id="contact">
+        <div class="container">
+            <div class="section-head">
+                <h2 class="section-title">Contact me</h2>
+                <p class="section-sub">You can reach me through any of these.</p>
+            </div>
+
+            <div class="contact-grid">
+                <a class="contact-card glow-ring" href="mailto:emmanueldeyto68@email.com">
+                    <div class="contact-icon"><svg class="icon"><use href="#i-mail"/></svg></div>
+                    <p class="contact-label">Email</p>
+                    <p class="contact-value">emmanueldeyto68@email.com</p>
+                </a>
+                <div class="contact-card glow-ring">
+                    <div class="contact-icon"><svg class="icon"><use href="#i-facebook"/></svg></div>
+                    <p class="contact-label">Facebook</p>
+                    <p class="contact-value">Christian Evangelista</p>
+                </div>
+                <a class="contact-card glow-ring" href="tel:09106422960">
+                    <div class="contact-icon"><svg class="icon"><use href="#i-phone"/></svg></div>
+                    <p class="contact-label">Phone</p>
+                    <p class="contact-value">09106422960</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+
+    <footer class="site-footer">
+        <img src="assets/img/banner.png?v=4" class="footer-logo" alt="Logo">
+        © 2026 Deyto's Portfolio
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Typing effect in the hero
+        (function () {
+            const el = document.getElementById('typed');
+            if (!el) return;
+            const words = ['web projects', 'Python programs', 'SQL databases', 'network setups'];
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            let w = 0, i = 0, deleting = false;
+            function tick() {
+                const word = words[w];
+                el.textContent = word.slice(0, i);
+                if (!deleting && i < word.length) { i++; setTimeout(tick, 90); }
+                else if (!deleting) { deleting = true; setTimeout(tick, 1400); }
+                else if (i > 0) { i--; setTimeout(tick, 45); }
+                else { deleting = false; w = (w + 1) % words.length; setTimeout(tick, 300); }
+            }
+            tick();
+        })();
+
+        // Skills strip: repeat the tiles so the loop never shows a gap
+        document.querySelectorAll('.marquee-track').forEach(function (track) {
+            const base = Array.from(track.children);
+            const box = track.parentElement;
+            function copy() {
+                base.forEach(function (n) {
+                    const c = n.cloneNode(true);
+                    c.setAttribute('aria-hidden', 'true');
+                    track.appendChild(c);
+                });
+            }
+            let guard = 0;
+            while (track.scrollWidth < box.clientWidth && guard++ < 10) copy();
+            Array.from(track.children).forEach(function (n) {
+                const c = n.cloneNode(true);
+                c.setAttribute('aria-hidden', 'true');
+                track.appendChild(c);
+            });
+        });
+    </script>
+    
+    <script>
+        // Hero logo: a stack of copies of the logo, each slightly deeper, so it turns like a solid object
+        (function () {
+            var holo = document.getElementById('heroLogo');
+            if (!holo || !document.getElementById('badge-art')) return;
+            var layers = 29, ns = 'http://www.w3.org/2000/svg';   // many thin layers, packed close, so the edge looks solid
+            for (var i = 0; i < layers; i++) {
+                var svg = document.createElementNS(ns, 'svg');
+                svg.setAttribute('viewBox', '0 0 512 512');
+                var use = document.createElementNS(ns, 'use');
+                use.setAttribute('href', '#badge-art');
+                svg.appendChild(use);
+                svg.style.setProperty('--z', ((i - (layers - 1) / 2) * 1.7).toFixed(2));
+                svg.style.setProperty('--o', (i === 0 || i === layers - 1) ? '1' : '0.75');
+                holo.appendChild(svg);
+            }
+        })();
+
+        // Cards lean toward the mouse when hovered (mouse only, and not for reduced motion)
+        (function () {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+            document.querySelectorAll('.glow-ring').forEach(function (card) {
+                card.addEventListener('pointermove', function (e) {
+                    if (e.pointerType && e.pointerType !== 'mouse') return;
+                    var r = card.getBoundingClientRect();
+                    var px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+                    var max = r.width > 520 ? 4 : r.width > 340 ? 6 : 9;      // big cards lean less
+                    var ry = (px - 0.5) * 2 * max, rx = -(py - 0.5) * 2 * max;
+                    card.style.transition = 'transform .12s ease-out, box-shadow .3s ease, border-color .25s';
+                    card.style.transform = 'perspective(900px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg) translateY(-4px) scale(1.01)';
+                });
+                card.addEventListener('pointerleave', function () {
+                    card.style.transition = '';
+                    card.style.transform = '';
+                });
+            });
+        })();
+    </script>
+
+</body>
+</html>
