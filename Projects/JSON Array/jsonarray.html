@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>From Page to Screen | Emmanuel Deyto</title>
-    <link rel="icon" type="image/png" href="assets/img/logo.png?v=2">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg?v=3">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/img/favicon.png?v=3">
+    <link rel="icon" href="assets/img/favicon.ico?v=3" sizes="any">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,9 +14,179 @@
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="assets/css/style.css">
+
+    <style>
+        /* ---------- LOADING SCREEN (hologram badge) ---------- */
+        #loader {
+            position: fixed; inset: 0; z-index: 9999;
+            display: grid; place-items: center;
+            background: radial-gradient(circle at 50% 42%, #1b1708 0, #070605 55%, #030302 100%);
+            transition: opacity .6s ease, visibility .6s;
+        }
+        #loader.hide { opacity: 0; visibility: hidden; }
+        body.is-loading { overflow: hidden; }
+
+        .loader-inner { display: flex; flex-direction: column; align-items: center; gap: 22px; padding: 16px; }
+
+        .holo-stage {
+            position: relative;
+            width: min(230px, 52vw);
+            aspect-ratio: 1;
+            perspective: 900px;
+        }
+        .holo {
+            position: absolute; inset: 0;
+            transform-style: preserve-3d;
+            animation: holo-spin 7s linear infinite, holo-flicker 4.5s steps(1) infinite;
+            filter: drop-shadow(0 0 14px rgba(201, 168, 76, .45));
+        }
+        .holo svg {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            overflow: visible;
+            opacity: var(--o, 1);
+            transform: translateZ(calc(var(--z, 0) * 1px));
+        }
+
+        /* thin scan lines over the hologram, and a bright beam sweeping down it */
+        .holo-stage::before {
+            content: ""; position: absolute; inset: -4%; z-index: 2; pointer-events: none;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,.38) 0 1px, transparent 1px 4px);
+            -webkit-mask-image: radial-gradient(circle, #000 38%, transparent 68%);
+            mask-image: radial-gradient(circle, #000 38%, transparent 68%);
+        }
+        .holo-stage::after {
+            content: ""; position: absolute; left: -6%; right: -6%; height: 22%; z-index: 3; pointer-events: none;
+            background: linear-gradient(to bottom, transparent, rgba(255, 224, 120, .28), transparent);
+            animation: holo-scan 2.6s linear infinite;
+            -webkit-mask-image: linear-gradient(90deg, transparent, #000 28%, #000 72%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 28%, #000 72%, transparent);
+        }
+
+        /* the "projector" under the badge */
+        .holo-base {
+            position: relative; width: min(250px, 56vw); height: 40px; margin-top: -14px;
+        }
+        .holo-base i {
+            position: absolute; left: 50%; top: 50%; border-radius: 50%;
+            border: 2px solid rgba(201, 168, 76, .6);
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 18px rgba(201, 168, 76, .35), inset 0 0 14px rgba(201, 168, 76, .2);
+        }
+        .holo-base i:nth-child(1) { width: 100%; height: 100%; }
+        .holo-base i:nth-child(2) { width: 68%; height: 62%; border-color: rgba(255, 210, 31, .75); }
+        .holo-base::after {
+            content: ""; position: absolute; left: 14%; right: 14%; bottom: 50%; height: 180px;
+            background: linear-gradient(to top, rgba(255, 210, 31, .16), transparent);
+            clip-path: polygon(0 100%, 100% 100%, 82% 0, 18% 0); pointer-events: none;
+        }
+
+        .loader-text {
+            margin: 6px 0 0; color: var(--gold-soft, #ead9a2);
+            font-size: .85rem; letter-spacing: .4em; text-transform: uppercase; font-weight: 700;
+        }
+        .loader-text span { animation: holo-dot 1.2s infinite; opacity: .2; }
+        .loader-text span:nth-child(2) { animation-delay: .2s; }
+        .loader-text span:nth-child(3) { animation-delay: .4s; }
+        .loader-bar { width: 180px; height: 2px; background: rgba(201, 168, 76, .2); overflow: hidden; }
+        .loader-bar b { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #c9a84c, #ffd21f); animation: holo-bar 1.8s ease-out forwards; }
+
+        @keyframes holo-spin { to { transform: rotateY(360deg); } }
+        @keyframes holo-scan { from { top: -22%; } to { top: 100%; } }
+        @keyframes holo-flicker { 0%, 100% { opacity: 1; } 91% { opacity: .82; } 93% { opacity: 1; } 96% { opacity: .9; } }
+        @keyframes holo-dot { 50% { opacity: 1; } }
+        @keyframes holo-bar { to { width: 100%; } }
+
+        @media (prefers-reduced-motion: reduce) {
+            .holo, .holo-stage::after, .loader-text span { animation: none !important; }
+            .loader-text span { opacity: 1; }
+            .loader-bar b { animation-duration: .5s; }
+        }
+
+        /* ---------- HERO LOGO (slow 3D turn, centered under the intro) ---------- */
+
+        /* ---------- CARD TILT ---------- */
+        /* once a card has finished its entrance animation, release it so it can tilt */
+        .screen-card.rested { animation: none; }
+        @media (prefers-reduced-motion: reduce) { .screen-card { transition: none; } }
+    </style>
+    <noscript><style>#loader { display: none !important; }</style></noscript>
 </head>
 
 <body>
+
+    <!-- LOADING SCREEN -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <defs>
+            <linearGradient id="badgeGrad" gradientUnits="userSpaceOnUse" x1="80" y1="130" x2="430" y2="390">
+                <stop offset="0" stop-color="#ead9a2"/><stop offset=".5" stop-color="#c9a84c"/><stop offset="1" stop-color="#8a6d1c"/>
+            </linearGradient>
+            <clipPath id="badgeClip"><rect x="0" y="146" width="512" height="220"/></clipPath>
+            <g id="badge-art">
+                <g clip-path="url(#badgeClip)" fill="none" stroke="url(#badgeGrad)" stroke-width="34" stroke-linejoin="miter" stroke-miterlimit="10">
+                    <path d="M204 112L92 256L204 400"/><path d="M308 112L420 256L308 400"/>
+                </g>
+                <path d="M232 196V316L310 256z" fill="url(#badgeGrad)"/>
+            </g>
+        </defs>
+    </svg>
+
+    <div id="loader" role="status" aria-label="Loading">
+        <div class="loader-inner">
+            <div class="holo-stage"><div class="holo" id="holo"></div></div>
+            <div class="holo-base" aria-hidden="true"><i></i><i></i></div>
+            <p class="loader-text">Loading<span>.</span><span>.</span><span>.</span></p>
+            <div class="loader-bar" aria-hidden="true"><b></b></div>
+        </div>
+    </div>
+    <script>
+        // Hologram loading screen: shown once per visit, hides when the page has loaded
+        (function () {
+            var loader = document.getElementById('loader');
+            if (!loader) return;
+
+            var seen = false;
+            try { seen = sessionStorage.getItem('logoLoaderSeen') === '1'; } catch (e) {}
+            if (seen) { loader.remove(); return; }
+            try { sessionStorage.setItem('logoLoaderSeen', '1'); } catch (e) {}
+
+            // stack of copies of the badge, each a little deeper, so it turns like a 3D object
+            var holo = document.getElementById('holo'), layers = 11, ns = 'http://www.w3.org/2000/svg';
+            for (var i = 0; i < layers; i++) {
+                var svg = document.createElementNS(ns, 'svg');
+                svg.setAttribute('viewBox', '0 0 512 512');
+                svg.setAttribute('aria-hidden', 'true');
+                var use = document.createElementNS(ns, 'use');
+                use.setAttribute('href', '#badge-art');
+                svg.appendChild(use);
+                svg.style.setProperty('--z', ((i - (layers - 1) / 2) * 3.5).toFixed(1));
+                svg.style.setProperty('--o', (i === 0 || i === layers - 1) ? '1' : '0.28');
+                holo.appendChild(svg);
+            }
+
+            document.body.classList.add('is-loading');
+
+            var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var minTime = reduce ? 500 : 1800;
+            var start = Date.now(), loaded = document.readyState === 'complete', hidden = false;
+
+            function hide() {
+                if (hidden) return;
+                hidden = true;
+                loader.classList.add('hide');
+                document.body.classList.remove('is-loading');
+                setTimeout(function () { loader.remove(); }, 700);
+            }
+            function check() {
+                if (!loaded) return;
+                var wait = minTime - (Date.now() - start);
+                if (wait <= 0) hide(); else setTimeout(hide, wait);
+            }
+            if (loaded) check(); else window.addEventListener('load', function () { loaded = true; check(); });
+            setTimeout(hide, 7000);   // never trap a visitor on the loading screen
+        })();
+    </script>
+
 
     <!-- ICONS -->
     <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -60,7 +232,7 @@
             <noscript><p class="result-count">This page needs JavaScript to show the list.</p></noscript>
 
             <div class="back-row">
-                <a href="../webdev.html" class="button button-outline">
+                <a href="../webdev.html" class="button button-gold">
                     <svg class="icon"><use href="#i-back"/></svg>Back to Web Development
                 </a>
             </div>
@@ -70,7 +242,7 @@
     <!-- FOOTER -->
 
     <footer class="site-footer">
-        <img src="assets/img/banner.png" class="footer-logo" alt="ITANI logo" onerror="this.remove()">
+        <img src="assets/img/banner.png?v=4" class="footer-logo" alt="Logo" onerror="this.remove()">
         © 2026 Deyto's Portfolio
     </footer>
 
@@ -244,6 +416,39 @@
         });
 
         render("all");
+    </script>
+
+    <script>
+        // Cards lean toward the mouse when hovered (mouse only, and not for reduced motion)
+        (function () {
+            var grid = document.getElementById('grid');
+            if (!grid) return;
+
+            // the entrance animation would hold the card still, so let go of it when it ends
+            grid.addEventListener('animationend', function (e) {
+                if (e.animationName === 'screen-rise' && e.target.classList) e.target.classList.add('rested');
+            });
+
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+            var current = null;
+            function reset(card) { if (card) { card.style.transition = ''; card.style.transform = ''; } }
+
+            grid.addEventListener('pointermove', function (e) {
+                if (e.pointerType && e.pointerType !== 'mouse') return;
+                var card = e.target.closest ? e.target.closest('.screen-card') : null;
+                if (card !== current) { reset(current); current = card; }
+                if (!card || !card.classList.contains('rested')) return;
+                var r = card.getBoundingClientRect();
+                var px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+                var max = r.width > 520 ? 3 : r.width > 340 ? 6 : 9;      // big cards lean less
+                var ry = (px - 0.5) * 2 * max, rx = -(py - 0.5) * 2 * max;
+                card.style.transition = 'transform .12s ease-out, box-shadow .3s ease, border-color .25s';
+                card.style.transform = 'perspective(900px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg) translateY(-4px) scale(1.01)';
+            });
+            grid.addEventListener('pointerleave', function () { reset(current); current = null; });
+        })();
     </script>
 
 </body>
