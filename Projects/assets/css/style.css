@@ -373,9 +373,9 @@ button:focus-visible {
 }
 
 @media (max-width: 767px) {
-    .corner { width: 24px; height: 24px; top: 12px; }
+    .corner { width: 24px; height: 24px; }
     .corner-tl, .corner-tr { top: 12px; }
-    .corner-bl, .corner-br { bottom: 12px; }
+    .corner-bl, .corner-br { top: auto; bottom: 12px; }
     .corner-tl, .corner-bl { left: 12px; }
     .corner-tr, .corner-br { right: 12px; }
 }
